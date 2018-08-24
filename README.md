@@ -64,7 +64,7 @@ section before attempting to run.
 ###### USERNAME: admin
 ###### PASSWORD: password
 
-### Dependencies
+### Dependencies:
 1) SQL Server Express 2016 LocalDB. If Express LocalDB is not installed on the machine running the software, it will not get past login 
 when Florae Basket tries to access the database. To run in Visual Studio, the "Data Storage and Processing" workload may be downloaded, 
 or the individual LocalDB component may be downloaded. Modify -> Individual components -> Cloud, Database, and Server -> 
@@ -75,14 +75,14 @@ for personal use and development testing. This means Florae Basket may not under
 only. When ran as an .exe, it will leave a watermark on the PDF file, which is fine for this proof of concept application.
 3) Adobe Acrobat must be set as the default PDF viewer on the computer that the software runs on for the print functionality to work.
 
-### Example Images
+### Example Images:
 <img src='FloraeImages/Login.png' height='450'> <img src='FloraeImages/TextSearch.png' height='450'> 
 <img src='FloraeImages/ImageSearch.png' height='450'> <img src='FloraeImages/RgbSearch.png' height='450'> 
 <img src='FloraeImages/AddFlower.png' height='450'> <img src='FloraeImages/CreateUser.png' height='450'> 
 <img src='FloraeImages/EditUser.png' height='450'> <img src='FloraeImages/Results.png' height='450'> 
 <img src='FloraeImages/Histogram.png' height='450'> <img src='FloraeImages/EditEntry.png' height='450'>
 
-### Documentation Examples
+### Documentation Examples:
 <img src='FloraeImages/DesignClassDiagram.png' height='450'>
 <img src='FloraeImages/LoginScenario.png' height='200'> <br><img src='FloraeImages/LoginExpanded.png' height='600'> 
 <img src='FloraeImages/Login_Cyclomatic.png' height='450'> <img src='FloraeImages/SearchByText_Sequence.png' height='450'> 
