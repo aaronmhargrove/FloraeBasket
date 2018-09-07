@@ -345,22 +345,6 @@ namespace CoreProject
             SqlDataAdapter FlowerDA = new SqlDataAdapter(flowerCmd);
             FlowerDA.Fill(FlowerDS, "Flowers");
 
-            // Gets Note Table
-            SqlCommand noteCmd = new SqlCommand("SELECT * FROM Notes;");
-            noteCmd.Connection = connection;
-            DataSet NotesDS = new DataSet();
-            SqlDataAdapter NoteDA = new SqlDataAdapter(noteCmd);
-            NoteDA.Fill(NotesDS, "Notes");
-
-            // Gets Flower Images
-            SqlCommand flowerImagesCmd = new SqlCommand("SELECT * FROM FlowerImages;");
-            flowerImagesCmd.Connection = connection;
-            DataSet FlowerImageDS = new DataSet();
-            SqlDataAdapter FlowerImageDA = new SqlDataAdapter(flowerImagesCmd);
-            FlowerImageDA.Fill(FlowerImageDS, "FlowerImages");
-
-            connection.Close();
-
             List<Flower> flowers = new List<Flower>();
 
             // Loop through flowers
@@ -370,75 +354,22 @@ namespace CoreProject
                 String engName = (FlowerDS.Tables[0].Rows[f]["EnglishName"]).ToString();
                 String latName = (FlowerDS.Tables[0].Rows[f]["LatinName"]).ToString();
                 String botFamily = (FlowerDS.Tables[0].Rows[f]["BotanicalFamily"]).ToString();
-                List<FlowerImage> flowerImages = new List<FlowerImage>();
-                List<Note> flowerNotes = new List<Note>();
-
-
-                // Loop through Flower Images
-                for (int fi = 0; fi < FlowerImageDS.Tables[0].Rows.Count; fi++)
-                {
-                    int currentFlowerImageID = Int32.Parse((FlowerImageDS.Tables[0].Rows[fi]["id"]).ToString());
-                    String imageLocation;
-
-                    // If there is an image that belongs to the flower (and id field is not null)
-                    if ((FlowerImageDS.Tables[0].Rows[fi]["FlowerId"]).ToString() != "")
-                    {
-                        if (currentFlowerID == Int32.Parse((FlowerImageDS.Tables[0].Rows[fi]["FlowerId"]).ToString()))
-                        {
-                            imageLocation = (FlowerImageDS.Tables[0].Rows[fi]["ImageLocation"]).ToString();
-                            FlowerImage flowerImage = new FlowerImage(imageLocation);
-
-                            // Look for note for flower image
-                            for (int fin = 0; fin < NotesDS.Tables[0].Rows.Count; fin++)
-                            {
-                                // If note belongs to current flower image (and id field is not null)
-                                if ((NotesDS.Tables[0].Rows[fin]["FlowerImageId"]).ToString() != "")
-                                {
-                                    if (currentFlowerImageID == Int32.Parse((NotesDS.Tables[0].Rows[fin]["FlowerImageId"]).ToString()))
-                                    {
-                                        String info = (NotesDS.Tables[0].Rows[fin]["Info"]).ToString();
-                                        String date = (NotesDS.Tables[0].Rows[fin]["Date"]).ToString();
-                                        String time = (NotesDS.Tables[0].Rows[fin]["Time"]).ToString();
-                                        Note note = new Note(info, date, time);
-                                        flowerImage.SetNote(note);
-                                    }
-                                } 
-                            } 
-                            flowerImage.SetId(currentFlowerImageID);
-                            flowerImages.Add(flowerImage);
-                        } 
-                    }
-
-                    // Look for notes that belong to flower
-                    flowerNotes = new List<Note>();
-                    for(int fn = 0; fn < NotesDS.Tables[0].Rows.Count; fn++)
-                    {
-                        String info = "";
-                        String date = "";
-                        String time = "";
-
-                        // If note belongs to current flower image (and id field is not null cause it breaks EVERYTHING)
-                        if ((NotesDS.Tables[0].Rows[fn]["FlowerId"]).ToString() != "")
-                        {
-                            if (currentFlowerID == Int32.Parse((NotesDS.Tables[0].Rows[fn]["FlowerId"]).ToString()))
-                            {
-                                info = (NotesDS.Tables[0].Rows[fn]["Info"]).ToString();
-                                date = (NotesDS.Tables[0].Rows[fn]["Date"]).ToString();
-                                time = (NotesDS.Tables[0].Rows[fn]["Time"]).ToString();
-                                Note note = new Note(info, date, time);
-                                flowerNotes.Add(note);
-                            }
-                        }
-                    }
-                } // end for
+                List<FlowerImage> flowerImages = GetImagesForFlower(currentFlowerID);
+                List<Note> flowerNotes = GetNotesForFlower(currentFlowerID);
 
                 // Create flower and add to results list
                 Flower flower = new Flower(engName, latName, botFamily, flowerNotes, flowerImages);
-                flower.SetId(currentFlowerID);
+                //flower.SetId(currentFlowerID);
                 flowers.Add(flower);
             }
-            
+
+            if (connection.State == ConnectionState.Open)
+            {
+                connection.Close();
+            }
+
             return flowers;
+
         } // end GetFlowers()
 
         // Called by AddFlowerController to save a new flower in the database.
