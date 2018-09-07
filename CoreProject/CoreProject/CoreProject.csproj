@@ -162,11 +162,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FloraeBasket.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="FloraeBasket_log.ldf">
       <DependentUpon>FloraeBasket.mdf</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="README.txt" />
   </ItemGroup>
