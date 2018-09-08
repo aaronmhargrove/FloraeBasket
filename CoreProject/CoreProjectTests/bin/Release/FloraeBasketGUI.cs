@@ -226,6 +226,8 @@ namespace CoreProject
                 SBTRSaveAsPDFBttn.Visible = false;
                 SBTRPrevNote.Visible = false;
                 SBTRNextNote.Visible = false;
+                SBTRNextResult.Visible = false;
+                SBTRPrevResult.Visible = false;
                 viewHistogramBttn.Visible = false;
             }
             else // Display results
@@ -246,6 +248,8 @@ namespace CoreProject
                 SBTRSaveAsPDFBttn.Visible = true;
                 SBTRPrevNote.Visible = true;
                 SBTRNextNote.Visible = true;
+                SBTRNextResult.Visible = true;
+                SBTRPrevResult.Visible = true;
                 viewHistogramBttn.Visible = true;
                 SBTRNumFlowers = SBTRResults.Count;
                 // Load the first flower in the list
@@ -409,7 +413,11 @@ namespace CoreProject
 
             // Load notes
             if(SBTRResults[i].GetNotes().Count > 0)
+            {
+                SBTRNumNotes = SBTRResults[i].GetNotes().Count;
                 SBTRFlowerNote.Text = SBTRResults[i].GetNotes()[0].GetInfo();
+            }
+                
             // Load images
             if (SBTRResults[i].GetImages().Count != 0)
             {
@@ -821,12 +829,14 @@ namespace CoreProject
         // Displays the color graph (histogram) to the user
         private void viewHistogramBttn_Click(object sender, EventArgs e)
         {
-            ClearAll();
-            viewHistogramPanel.Visible = true;
+            if (SBTRNumPics > 0)
+            {
+                ClearAll();
+                viewHistogramPanel.Visible = true;
 
-            // Adds data points to each chart
-            ViewHistogramController.AddDataPointsToChart(selectedHistogram, ref colorHistogram);
-
+                // Adds data points to each chart
+                ViewHistogramController.AddDataPointsToChart(selectedHistogram, ref colorHistogram);
+            }
         }
 
         // Go back to search results after viewing histogram
@@ -858,7 +868,7 @@ namespace CoreProject
             editFlowerFamilyEntry.Text = editFlower.GetBotanicalFamily();
             editFlowerImages = editFlower.GetImages();
             // Setup image box
-            if (editFlowerImages != null)
+            if (SBTRNumPics > 0)
             {
                 EditFlowerPicBox.ImageLocation = editFlowerImages[editFlowerPic].GetImageLocation();
                 EditFlowerImageNoteEntry.Text = editFlowerImages[editFlowerPic].GetNote().GetInfo();
@@ -912,25 +922,31 @@ namespace CoreProject
         // Allows user to delete an image from a flower object
         private void EditFlowerImageDelete_Click(object sender, EventArgs e)
         {
-            // message box to confirm deletion
-            var confirmResult = MessageBox.Show("Are you sure you want to delete this image?", "Confirm Delete", MessageBoxButtons.YesNo);
-            if (confirmResult == DialogResult.Yes)
+            if (editFlowerImages.Count() > 0)
             {
-                // Delete image
-                editFlowerImages.RemoveAt(editFlowerPic);
-                editFlowerPic = 0;
-                // If the flower has no more pictures after deletion
-                if(editFlowerImages.Count() == 0)
+                // message box to confirm deletion
+                var confirmResult = MessageBox.Show("Are you sure you want to delete this image?", "Confirm Delete", MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
                 {
-                    // Display error image in picture box
-                    EditFlowerPicBox.Image = EditFlowerPicBox.ErrorImage;
-                }
-                else
-                {
-                    // Display first image in flower image list
-                    EditFlowerPicBox.ImageLocation = editFlowerImages[editFlowerPic].GetImageLocation();
+                    // Delete image
+                    editFlowerImages.RemoveAt(editFlowerPic);
+                    editFlowerPic = 0;
+                    // If the flower has no more pictures after deletion
+                    if (editFlowerImages.Count() == 0)
+                    {
+                        // Display error image in picture box
+                        EditFlowerPicBox.Image = EditFlowerPicBox.ErrorImage;
+                    }
+                    else
+                    {
+                        // Display first image in flower image list
+                        EditFlowerPicBox.ImageLocation = editFlowerImages[editFlowerPic].GetImageLocation();
+                    }
                 }
             }
+            else
+                MessageBox.Show("No images to delete!");
+
         }
 
         // Uses ImportPhotos() to allow user to add a new image to a flower object
@@ -952,7 +968,10 @@ namespace CoreProject
         // Takes text from user and updates an Image's note
         private void EditFlowerImageNoteSet_Click(object sender, EventArgs e)
         {
-            editFlowerImages[editFlowerPic].SetNote(new Note(EditFlowerImageNoteEntry.Text));
+            if (editFlowerImages.Count > 0)
+                editFlowerImages[editFlowerPic].SetNote(new Note(EditFlowerImageNoteEntry.Text));
+            else
+                MessageBox.Show("No image. No note to edit!");
         }
 
         // Submit button. Uses EditFlowerController to save changes to the flower
